@@ -134,6 +134,17 @@ export interface Meal {
   kcal: number
   protein_g: number
   gegessen: boolean
+  // Phase 2: deviation tracking (optional, backwards compatible)
+  kcal_abweichung?: number       // actual kcal if deviated (overrides kcal)
+  protein_g_abweichung?: number  // actual protein if deviated
+  abweichung_grund?: string      // e.g. "Restaurant Mittagessen"
+}
+
+// View model – computed on read, never stored
+export interface AdaptiveMeal extends Meal {
+  kcal_adjusted: number         // dynamically calculated budget for this meal
+  protein_g_adjusted: number
+  isAdjusted: boolean           // true if scaled away from original plan
 }
 
 export interface MealPlan {

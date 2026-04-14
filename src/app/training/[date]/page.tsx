@@ -1,13 +1,13 @@
-export default async function TrainingDetailPage({ params }: { params: Promise<{ date: string }> }) {
-  const { date } = await params
+'use client'
+
+import { use } from 'react'
+import TrainingLogger from '@/components/training/TrainingLogger'
+
+export default function TrainingDetailPage({ params }: { params: Promise<{ date: string }> }) {
+  const { date } = use(params)
   return (
-    <div className="px-4 pt-6">
-      <h1 className="text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
-        Training – {date}
-      </h1>
-      <p className="mt-2" style={{ color: 'var(--color-text-secondary)' }}>
-        Kommt in Phase 2
-      </p>
+    <div className="flex flex-col h-[calc(100dvh-64px)]">
+      <TrainingLogger datum={date} />
     </div>
   )
 }
