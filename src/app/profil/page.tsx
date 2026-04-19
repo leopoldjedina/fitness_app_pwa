@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useUserProfile, updateUserProfile } from '@/lib/hooks/useUserProfile'
 import { db } from '@/lib/db/database'
 import type { UserProfile, Standort } from '@/lib/db/types'
-import { MapPin, Download, CheckCircle } from 'lucide-react'
+import { MapPin, Download, Upload, CheckCircle } from 'lucide-react'
 
 function Field({
   label,
@@ -50,6 +50,7 @@ export default function ProfilPage() {
   const profile = useUserProfile()
   const [form, setForm] = useState<Partial<UserProfile>>({})
   const [saved, setSaved] = useState(false)
+  const [importStatus, setImportStatus] = useState<string | null>(null)
 
   useEffect(() => {
     if (profile) {
@@ -90,6 +91,55 @@ export default function ProfilPage() {
     a.download = `leofit-backup-${new Date().toISOString().split('T')[0]}.json`
     a.click()
     URL.revokeObjectURL(url)
+  }
+
+  async function handleImport() {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.json'
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0]
+      if (!file) return
+      try {
+        const text = await file.text()
+        const data = JSON.parse(text)
+        let count = 0
+        if (data.mealPlans?.length) {
+          for (const plan of data.mealPlans) await db.mealPlans.put(plan)
+          count += data.mealPlans.length
+        }
+        if (data.dailyTracking?.length) {
+          for (const t of data.dailyTracking) await db.dailyTracking.put(t)
+          count += data.dailyTracking.length
+        }
+        if (data.trainingSessions?.length) {
+          for (const s of data.trainingSessions) await db.trainingSessions.put(s)
+          count += data.trainingSessions.length
+        }
+        if (data.exerciseLogs?.length) {
+          for (const l of data.exerciseLogs) await db.exerciseLogs.put(l)
+          count += data.exerciseLogs.length
+        }
+        if (data.weekPlans?.length) {
+          for (const w of data.weekPlans) await db.weekPlans.put(w)
+          count += data.weekPlans.length
+        }
+        if (data.shoppingLists?.length) {
+          for (const s of data.shoppingLists) await db.shoppingLists.put(s)
+          count += data.shoppingLists.length
+        }
+        if (data.customFoods?.length) {
+          for (const f of data.customFoods) await db.customFoods.put(f)
+          count += data.customFoods.length
+        }
+        setImportStatus(`${count} Einträge importiert ✓`)
+        setTimeout(() => setImportStatus(null), 3000)
+      } catch {
+        setImportStatus('Import fehlgeschlagen – ungültiges Format')
+        setTimeout(() => setImportStatus(null), 3000)
+      }
+    }
+    input.click()
   }
 
   if (!profile) {
@@ -222,11 +272,19 @@ export default function ProfilPage() {
         </button>
         <button
           onClick={handleExport}
-          className="flex items-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition-all active:scale-95 glass"
+          className="flex items-center gap-2 px-3 py-3 rounded-xl font-semibold text-sm transition-all active:scale-95 glass"
           style={{ color: 'var(--color-text-secondary)' }}
         >
           <Download size={16} />
           Export
+        </button>
+        <button
+          onClick={handleImport}
+          className="flex items-center gap-2 px-3 py-3 rounded-xl font-semibold text-sm transition-all active:scale-95 glass"
+          style={{ color: importStatus ? 'var(--color-success)' : 'var(--color-text-secondary)' }}
+        >
+          <Upload size={16} />
+          {importStatus ?? 'Import'}
         </button>
       </div>
 

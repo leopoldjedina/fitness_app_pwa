@@ -1,0 +1,193 @@
+{
+  "mealPlans": [
+    {
+      "id": "mp-2026-04-15",
+      "datum": "2026-04-15",
+      "typ": "Trainingstag",
+      "kcal_gesamt": 2180,
+      "protein_gesamt_g": 141,
+      "mahlzeiten": [
+        {"name": "Frühstück", "kategorie": "Frühstück", "items": [], "lebensmittel": "Porridge: 50g Haferflocken, 150g Skyr, 200ml Milch, 80g Beeren, 1 TL Honig", "kcal": 430, "protein_g": 30, "gegessen": false},
+        {"name": "Pre-Training", "kategorie": "Pre-Training", "items": [], "lebensmittel": "1 Banane", "kcal": 80, "protein_g": 1, "gegessen": false},
+        {"name": "Mittagessen", "kategorie": "Mittagessen", "items": [], "lebensmittel": "Hühnchen-Reis: 150g Hühnchenbrust, 150g Reis, Brokkoli, 1 EL Olivenöl", "kcal": 580, "protein_g": 42, "gegessen": false},
+        {"name": "Snack", "kategorie": "Snack", "items": [], "lebensmittel": "200g Magerquark, 10g Walnüsse, 1 TL Honig", "kcal": 225, "protein_g": 26, "gegessen": false},
+        {"name": "Abendessen", "kategorie": "Abendessen", "items": [], "lebensmittel": "Rührei: 3 Eier, 100g Hüttenkäse, 1 Vollkornbrot", "kcal": 435, "protein_g": 32, "gegessen": false},
+        {"name": "Abend-Snack", "kategorie": "Snack", "items": [], "lebensmittel": "200g Skyr, 50g Beeren", "kcal": 145, "protein_g": 22, "gegessen": false}
+      ]
+    },
+    {
+      "id": "mp-2026-04-16",
+      "datum": "2026-04-16",
+      "typ": "Trainingstag",
+      "kcal_gesamt": 2195,
+      "protein_gesamt_g": 139,
+      "mahlzeiten": [
+        {"name": "Frühstück", "kategorie": "Frühstück", "items": [], "lebensmittel": "Rührei: 3 Eier, 100g Hüttenkäse, 1 Vollkornbrot", "kcal": 435, "protein_g": 32, "gegessen": false},
+        {"name": "Pre-Training", "kategorie": "Pre-Training", "items": [], "lebensmittel": "1 Banane", "kcal": 80, "protein_g": 1, "gegessen": false},
+        {"name": "Mittagessen", "kategorie": "Mittagessen", "items": [], "lebensmittel": "Thunfisch-Bowl: 150g Thunfisch, Tomate, Gurke, 200g Süßkartoffel, 1 EL Olivenöl", "kcal": 590, "protein_g": 42, "gegessen": false},
+        {"name": "Snack", "kategorie": "Snack", "items": [], "lebensmittel": "200g Skyr, 10g Walnüsse", "kcal": 185, "protein_g": 24, "gegessen": false},
+        {"name": "Abendessen", "kategorie": "Abendessen", "items": [], "lebensmittel": "Lachs: 150g Lachs, 200g Zucchini, 1 EL Olivenöl", "kcal": 435, "protein_g": 32, "gegessen": false},
+        {"name": "Abend-Snack", "kategorie": "Snack", "items": [], "lebensmittel": "200g Magerquark, 1 TL Honig", "kcal": 161, "protein_g": 24, "gegessen": false}
+      ]
+    },
+    {
+      "id": "mp-2026-04-17",
+      "datum": "2026-04-17",
+      "typ": "Trainingstag",
+      "kcal_gesamt": 2190,
+      "protein_gesamt_g": 138,
+      "mahlzeiten": [
+        {"name": "Frühstück", "kategorie": "Frühstück", "items": [], "lebensmittel": "Porridge: 50g Haferflocken, 150g Skyr, 200ml Milch, 80g Beeren, 1 TL Honig", "kcal": 430, "protein_g": 30, "gegessen": false},
+        {"name": "Pre-Training", "kategorie": "Pre-Training", "items": [], "lebensmittel": "1 Banane", "kcal": 80, "protein_g": 1, "gegessen": false},
+        {"name": "Mittagessen", "kategorie": "Mittagessen", "items": [], "lebensmittel": "Hühnchen-Reis: 150g Hühnchenbrust, 150g Reis, Brokkoli, 1 EL Olivenöl", "kcal": 580, "protein_g": 42, "gegessen": false},
+        {"name": "Snack", "kategorie": "Snack", "items": [], "lebensmittel": "200g Magerquark, 10g Walnüsse, 1 TL Honig", "kcal": 225, "protein_g": 26, "gegessen": false},
+        {"name": "Abendessen", "kategorie": "Abendessen", "items": [], "lebensmittel": "2 Eier, 50g Feta, 1 Vollkornbrot, Tomate", "kcal": 390, "protein_g": 27, "gegessen": false},
+        {"name": "Abend-Snack", "kategorie": "Snack", "items": [], "lebensmittel": "200g Skyr, 50g Beeren", "kcal": 145, "protein_g": 22, "gegessen": false}
+      ]
+    },
+    {
+      "id": "mp-2026-04-18",
+      "datum": "2026-04-18",
+      "typ": "Trainingstag",
+      "kcal_gesamt": 2200,
+      "protein_gesamt_g": 143,
+      "mahlzeiten": [
+        {"name": "Frühstück", "kategorie": "Frühstück", "items": [], "lebensmittel": "Rührei: 3 Eier, 100g Hüttenkäse, 1 Vollkornbrot", "kcal": 435, "protein_g": 32, "gegessen": false},
+        {"name": "Pre-Training", "kategorie": "Pre-Training", "items": [], "lebensmittel": "1 Banane", "kcal": 80, "protein_g": 1, "gegessen": false},
+        {"name": "Mittagessen", "kategorie": "Mittagessen", "items": [], "lebensmittel": "Thunfisch-Bowl: 150g Thunfisch, Tomate, Gurke, 200g Süßkartoffel, 1 EL Olivenöl", "kcal": 590, "protein_g": 42, "gegessen": false},
+        {"name": "Snack", "kategorie": "Snack", "items": [], "lebensmittel": "200g Skyr, 10g Walnüsse", "kcal": 185, "protein_g": 24, "gegessen": false},
+        {"name": "Abendessen", "kategorie": "Abendessen", "items": [], "lebensmittel": "150g Hühnchenbrust, 200g Brokkoli, 1 EL Olivenöl", "kcal": 405, "protein_g": 39, "gegessen": false},
+        {"name": "Abend-Snack", "kategorie": "Snack", "items": [], "lebensmittel": "200g Magerquark, 50g Beeren", "kcal": 181, "protein_g": 25, "gegessen": false}
+      ]
+    },
+    {
+      "id": "mp-2026-04-19",
+      "datum": "2026-04-19",
+      "typ": "Trainingstag",
+      "kcal_gesamt": 2185,
+      "protein_gesamt_g": 137,
+      "mahlzeiten": [
+        {"name": "Frühstück", "kategorie": "Frühstück", "items": [], "lebensmittel": "Porridge: 50g Haferflocken, 150g Skyr, 200ml Milch, 80g Beeren, 1 TL Honig", "kcal": 430, "protein_g": 30, "gegessen": false},
+        {"name": "Pre-Training", "kategorie": "Pre-Training", "items": [], "lebensmittel": "1 Banane", "kcal": 80, "protein_g": 1, "gegessen": false},
+        {"name": "Mittagessen", "kategorie": "Mittagessen", "items": [], "lebensmittel": "Lachs: 150g Lachs, 150g Reis, Zucchini", "kcal": 595, "protein_g": 36, "gegessen": false},
+        {"name": "Snack", "kategorie": "Snack", "items": [], "lebensmittel": "200g Magerquark, 10g Walnüsse, 1 TL Honig", "kcal": 225, "protein_g": 26, "gegessen": false},
+        {"name": "Abendessen", "kategorie": "Abendessen", "items": [], "lebensmittel": "Rührei: 3 Eier, 50g Feta, 1 Vollkornbrot", "kcal": 425, "protein_g": 28, "gegessen": false},
+        {"name": "Abend-Snack", "kategorie": "Snack", "items": [], "lebensmittel": "200g Skyr, 1 Apfel", "kcal": 190, "protein_g": 22, "gegessen": false}
+      ]
+    },
+    {
+      "id": "mp-2026-04-20",
+      "datum": "2026-04-20",
+      "typ": "Ruhetag",
+      "kcal_gesamt": 1995,
+      "protein_gesamt_g": 138,
+      "mahlzeiten": [
+        {"name": "Frühstück", "kategorie": "Frühstück", "items": [], "lebensmittel": "Rührei: 2 Eier, 100g Hüttenkäse, 1 Vollkornbrot", "kcal": 350, "protein_g": 25, "gegessen": false},
+        {"name": "Mittagessen", "kategorie": "Mittagessen", "items": [], "lebensmittel": "Thunfisch-Bowl: 150g Thunfisch, Tomate, Gurke, 200g Süßkartoffel", "kcal": 470, "protein_g": 42, "gegessen": false},
+        {"name": "Snack", "kategorie": "Snack", "items": [], "lebensmittel": "200g Magerquark, 10g Walnüsse", "kcal": 201, "protein_g": 26, "gegessen": false},
+        {"name": "Abendessen", "kategorie": "Abendessen", "items": [], "lebensmittel": "150g Lachs, 200g Brokkoli", "kcal": 350, "protein_g": 36, "gegessen": false},
+        {"name": "Abend-Snack", "kategorie": "Snack", "items": [], "lebensmittel": "200g Skyr, 50g Beeren, 1 TL Honig", "kcal": 170, "protein_g": 23, "gegessen": false}
+      ]
+    },
+    {
+      "id": "mp-2026-04-21",
+      "datum": "2026-04-21",
+      "typ": "Trainingstag",
+      "kcal_gesamt": 2195,
+      "protein_gesamt_g": 140,
+      "mahlzeiten": [
+        {"name": "Frühstück", "kategorie": "Frühstück", "items": [], "lebensmittel": "Porridge: 50g Haferflocken, 150g Skyr, 200ml Milch, 80g Beeren, 1 TL Honig", "kcal": 430, "protein_g": 30, "gegessen": false},
+        {"name": "Pre-Training", "kategorie": "Pre-Training", "items": [], "lebensmittel": "1 Banane", "kcal": 80, "protein_g": 1, "gegessen": false},
+        {"name": "Mittagessen", "kategorie": "Mittagessen", "items": [], "lebensmittel": "Hühnchen-Reis: 150g Hühnchenbrust, 150g Reis, Gemüse, 1 EL Olivenöl", "kcal": 580, "protein_g": 42, "gegessen": false},
+        {"name": "Snack", "kategorie": "Snack", "items": [], "lebensmittel": "200g Skyr, 10g Walnüsse", "kcal": 185, "protein_g": 24, "gegessen": false},
+        {"name": "Abendessen", "kategorie": "Abendessen", "items": [], "lebensmittel": "Lachs: 150g Lachs, 200g Zucchini, 1 EL Olivenöl", "kcal": 435, "protein_g": 32, "gegessen": false},
+        {"name": "Abend-Snack", "kategorie": "Snack", "items": [], "lebensmittel": "200g Magerquark, 50g Beeren", "kcal": 181, "protein_g": 25, "gegessen": false}
+      ]
+    },
+    {
+      "id": "mp-2026-04-22",
+      "datum": "2026-04-22",
+      "typ": "Trainingstag",
+      "kcal_gesamt": 2190,
+      "protein_gesamt_g": 141,
+      "mahlzeiten": [
+        {"name": "Frühstück", "kategorie": "Frühstück", "items": [], "lebensmittel": "Rührei: 3 Eier, 100g Hüttenkäse, 1 Vollkornbrot", "kcal": 435, "protein_g": 32, "gegessen": false},
+        {"name": "Pre-Training", "kategorie": "Pre-Training", "items": [], "lebensmittel": "1 Banane", "kcal": 80, "protein_g": 1, "gegessen": false},
+        {"name": "Mittagessen", "kategorie": "Mittagessen", "items": [], "lebensmittel": "Thunfisch-Bowl: 150g Thunfisch, Tomate, Gurke, 200g Süßkartoffel, 1 EL Olivenöl", "kcal": 590, "protein_g": 42, "gegessen": false},
+        {"name": "Snack", "kategorie": "Snack", "items": [], "lebensmittel": "200g Magerquark, 10g Walnüsse, 1 TL Honig", "kcal": 225, "protein_g": 26, "gegessen": false},
+        {"name": "Abendessen", "kategorie": "Abendessen", "items": [], "lebensmittel": "150g Hühnchenbrust, 200g Brokkoli, 1 EL Olivenöl", "kcal": 405, "protein_g": 39, "gegessen": false},
+        {"name": "Abend-Snack", "kategorie": "Snack", "items": [], "lebensmittel": "200g Skyr, 50g Beeren", "kcal": 145, "protein_g": 22, "gegessen": false}
+      ]
+    },
+    {
+      "id": "mp-2026-04-23",
+      "datum": "2026-04-23",
+      "typ": "Trainingstag",
+      "kcal_gesamt": 2185,
+      "protein_gesamt_g": 137,
+      "mahlzeiten": [
+        {"name": "Frühstück", "kategorie": "Frühstück", "items": [], "lebensmittel": "Porridge: 50g Haferflocken, 150g Skyr, 200ml Milch, 80g Beeren, 1 TL Honig", "kcal": 430, "protein_g": 30, "gegessen": false},
+        {"name": "Pre-Training", "kategorie": "Pre-Training", "items": [], "lebensmittel": "1 Banane", "kcal": 80, "protein_g": 1, "gegessen": false},
+        {"name": "Mittagessen", "kategorie": "Mittagessen", "items": [], "lebensmittel": "Hühnchen-Reis: 150g Hühnchenbrust, 150g Reis, Gemüse, 1 EL Olivenöl", "kcal": 580, "protein_g": 42, "gegessen": false},
+        {"name": "Snack", "kategorie": "Snack", "items": [], "lebensmittel": "200g Skyr, 10g Walnüsse", "kcal": 185, "protein_g": 24, "gegessen": false},
+        {"name": "Abendessen", "kategorie": "Abendessen", "items": [], "lebensmittel": "2 Eier, 50g Feta, 1 Vollkornbrot, Tomate", "kcal": 390, "protein_g": 27, "gegessen": false},
+        {"name": "Abend-Snack", "kategorie": "Snack", "items": [], "lebensmittel": "200g Magerquark, 1 TL Honig", "kcal": 161, "protein_g": 24, "gegessen": false}
+      ]
+    },
+    {
+      "id": "mp-2026-04-24",
+      "datum": "2026-04-24",
+      "typ": "Trainingstag",
+      "kcal_gesamt": 2200,
+      "protein_gesamt_g": 143,
+      "mahlzeiten": [
+        {"name": "Frühstück", "kategorie": "Frühstück", "items": [], "lebensmittel": "Rührei: 3 Eier, 100g Hüttenkäse, 1 Vollkornbrot", "kcal": 435, "protein_g": 32, "gegessen": false},
+        {"name": "Pre-Training", "kategorie": "Pre-Training", "items": [], "lebensmittel": "1 Banane", "kcal": 80, "protein_g": 1, "gegessen": false},
+        {"name": "Mittagessen", "kategorie": "Mittagessen", "items": [], "lebensmittel": "Lachs: 150g Lachs, 150g Reis, Zucchini", "kcal": 595, "protein_g": 36, "gegessen": false},
+        {"name": "Snack", "kategorie": "Snack", "items": [], "lebensmittel": "200g Magerquark, 10g Walnüsse, 1 TL Honig", "kcal": 225, "protein_g": 26, "gegessen": false},
+        {"name": "Abendessen", "kategorie": "Abendessen", "items": [], "lebensmittel": "150g Hühnchenbrust, 200g Brokkoli, 1 EL Olivenöl", "kcal": 405, "protein_g": 39, "gegessen": false},
+        {"name": "Abend-Snack", "kategorie": "Snack", "items": [], "lebensmittel": "200g Skyr, 50g Beeren", "kcal": 145, "protein_g": 22, "gegessen": false}
+      ]
+    },
+    {
+      "id": "mp-2026-04-25",
+      "datum": "2026-04-25",
+      "typ": "Trainingstag",
+      "kcal_gesamt": 2190,
+      "protein_gesamt_g": 138,
+      "mahlzeiten": [
+        {"name": "Frühstück", "kategorie": "Frühstück", "items": [], "lebensmittel": "Porridge: 50g Haferflocken, 150g Skyr, 200ml Milch, 80g Beeren, 1 TL Honig", "kcal": 430, "protein_g": 30, "gegessen": false},
+        {"name": "Pre-Training", "kategorie": "Pre-Training", "items": [], "lebensmittel": "1 Banane", "kcal": 80, "protein_g": 1, "gegessen": false},
+        {"name": "Mittagessen", "kategorie": "Mittagessen", "items": [], "lebensmittel": "Thunfisch-Bowl: 150g Thunfisch, Tomate, Gurke, 200g Süßkartoffel, 1 EL Olivenöl", "kcal": 590, "protein_g": 42, "gegessen": false},
+        {"name": "Snack", "kategorie": "Snack", "items": [], "lebensmittel": "200g Skyr, 10g Walnüsse", "kcal": 185, "protein_g": 24, "gegessen": false},
+        {"name": "Abendessen", "kategorie": "Abendessen", "items": [], "lebensmittel": "Lachs: 150g Lachs, 200g Brokkoli", "kcal": 350, "protein_g": 36, "gegessen": false},
+        {"name": "Abend-Snack", "kategorie": "Snack", "items": [], "lebensmittel": "200g Magerquark, 50g Beeren, 1 TL Honig", "kcal": 206, "protein_g": 25, "gegessen": false}
+      ]
+    },
+    {
+      "id": "mp-2026-04-26",
+      "datum": "2026-04-26",
+      "typ": "Trainingstag",
+      "kcal_gesamt": 2195,
+      "protein_gesamt_g": 140,
+      "mahlzeiten": [
+        {"name": "Frühstück", "kategorie": "Frühstück", "items": [], "lebensmittel": "Rührei: 3 Eier, 100g Hüttenkäse, 1 Vollkornbrot", "kcal": 435, "protein_g": 32, "gegessen": false},
+        {"name": "Pre-Training", "kategorie": "Pre-Training", "items": [], "lebensmittel": "1 Banane", "kcal": 80, "protein_g": 1, "gegessen": false},
+        {"name": "Mittagessen", "kategorie": "Mittagessen", "items": [], "lebensmittel": "Hühnchen-Reis: 150g Hühnchenbrust, 150g Reis, Gemüse, 1 EL Olivenöl", "kcal": 580, "protein_g": 42, "gegessen": false},
+        {"name": "Snack", "kategorie": "Snack", "items": [], "lebensmittel": "200g Magerquark, 10g Walnüsse, 1 TL Honig", "kcal": 225, "protein_g": 26, "gegessen": false},
+        {"name": "Abendessen", "kategorie": "Abendessen", "items": [], "lebensmittel": "150g Hühnchenbrust, 200g Zucchini, 1 EL Olivenöl", "kcal": 405, "protein_g": 38, "gegessen": false},
+        {"name": "Abend-Snack", "kategorie": "Snack", "items": [], "lebensmittel": "200g Skyr, 50g Beeren", "kcal": 145, "protein_g": 22, "gegessen": false}
+      ]
+    },
+    {
+      "id": "mp-2026-04-27",
+      "datum": "2026-04-27",
+      "typ": "Ruhetag",
+      "kcal_gesamt": 430,
+      "protein_gesamt_g": 30,
+      "mahlzeiten": [
+        {"name": "Frühstück", "kategorie": "Frühstück", "items": [], "lebensmittel": "Porridge: 50g Haferflocken, 150g Skyr, 200ml Milch, 80g Beeren, 1 TL Honig", "kcal": 430, "protein_g": 30, "gegessen": false}
+      ]
+    }
+  ]
+}
