@@ -265,27 +265,28 @@ export async function pushToSupabase(): Promise<{ pushed: number; errors: string
   async function pushTable<T>(
     table: string,
     items: T[],
-    mapper: (item: T) => Record<string, unknown>
+    mapper: (item: T) => Record<string, unknown>,
+    onConflict?: string
   ) {
     if (items.length === 0) return
     const rows = items.map(mapper)
-    // Batch upsert in chunks of 50
     for (let i = 0; i < rows.length; i += 50) {
       const chunk = rows.slice(i, i + 50)
-      const { error } = await supabase!.from(table).upsert(chunk)
+      const options = onConflict ? { onConflict } : undefined
+      const { error } = await supabase!.from(table).upsert(chunk, options)
       if (error) { errors.push(`${table}: ${error.message}`); return }
       pushed += chunk.length
     }
   }
 
   try {
-    await pushTable('user_profile', await db.userProfile.toArray(), profileToRow)
-    await pushTable('daily_tracking', await db.dailyTracking.toArray(), trackingToRow)
-    await pushTable('training_sessions', await db.trainingSessions.toArray(), sessionToRow)
-    await pushTable('exercise_logs', await db.exerciseLogs.toArray(), logToRow)
-    await pushTable('week_plans', await db.weekPlans.toArray(), weekPlanToRow)
-    await pushTable('meal_plans', await db.mealPlans.toArray(), mealPlanToRow)
-    await pushTable('custom_foods', await db.customFoods.toArray(), foodToRow)
+    await pushTable('user_profile', await db.userProfile.toArray(), profileToRow, 'id')
+    await pushTable('daily_tracking', await db.dailyTracking.toArray(), trackingToRow, 'datum')
+    await pushTable('training_sessions', await db.trainingSessions.toArray(), sessionToRow, 'id')
+    await pushTable('exercise_logs', await db.exerciseLogs.toArray(), logToRow, 'id')
+    await pushTable('week_plans', await db.weekPlans.toArray(), weekPlanToRow, 'jahr,kw')
+    await pushTable('meal_plans', await db.mealPlans.toArray(), mealPlanToRow, 'datum')
+    await pushTable('custom_foods', await db.customFoods.toArray(), foodToRow, 'id')
   } catch (e) {
     errors.push(e instanceof Error ? e.message : String(e))
   }
