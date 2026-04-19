@@ -1,41 +1,53 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { fullSync } from '@/lib/supabase/sync'
-import { supabase } from '@/lib/supabase/client'
+import { useEffect, useState, useCallback } from 'react'
 import { RefreshCw } from 'lucide-react'
 
 export default function SyncManager() {
   const [syncing, setSyncing] = useState(false)
   const [lastSync, setLastSync] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [ready, setReady] = useState(false)
 
-  // Auto-sync on mount
+  // Only initialize after mount (pure client-side)
   useEffect(() => {
-    if (!supabase) return
-    doSync()
+    setReady(true)
   }, [])
 
-  async function doSync() {
-    if (!supabase || syncing) return
+  const doSync = useCallback(async () => {
+    if (syncing) return
     setSyncing(true)
     setError(null)
     try {
+      // Dynamic import to avoid any SSR issues
+      const { fullSync } = await import('@/lib/supabase/sync')
+      const { supabase } = await import('@/lib/supabase/client')
+      if (!supabase) {
+        setError('Supabase nicht konfiguriert')
+        setSyncing(false)
+        return
+      }
       const result = await fullSync()
       if (result.errors.length > 0) {
         setError(result.errors[0])
+      } else {
+        setLastSync(new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }))
       }
-      setLastSync(new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }))
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Sync fehlgeschlagen')
     }
     setSyncing(false)
-  }
+  }, [syncing])
 
-  if (!supabase) return null
+  // Auto-sync on mount
+  useEffect(() => {
+    if (ready) doSync()
+  }, [ready])
+
+  if (!ready) return null
 
   return (
-    <div className="fixed top-2 right-2 z-40 flex flex-col items-end gap-1">
+    <div className="fixed top-2 right-2 z-40 flex flex-col items-end gap-1" style={{ paddingTop: 'var(--spacing-safe-top)' }}>
       <button
         onClick={doSync}
         disabled={syncing}
