@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { AnimatePresence, Reorder } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import { useTodayMealPlan, updateMeal, upsertMealPlan } from '@/lib/hooks/useTodayMealPlan'
 import { useUserProfile } from '@/lib/hooks/useUserProfile'
 import { useTodayTracking } from '@/lib/hooks/useTodayTracking'
@@ -176,36 +176,20 @@ export default function ErnaehrungPage() {
         </p>
       )}
 
-      {/* Meal list (reorderable) */}
-      {adaptiveMeals.length > 0 ? (
-        <Reorder.Group
-          axis="y"
-          values={adaptiveMeals}
-          onReorder={async (newOrder) => {
-            if (!mealPlan) return
-            // Map adaptive meals back to stored meals by matching index
-            const reorderedMeals = newOrder.map(am => {
-              const origIdx = adaptiveMeals.indexOf(am)
-              return mealPlan.mahlzeiten[origIdx]
-            })
-            await upsertMealPlan({ ...mealPlan, mahlzeiten: reorderedMeals })
-          }}
-          className="space-y-3"
-        >
-          {adaptiveMeals.map((meal, i) => (
-            <Reorder.Item key={meal.name + i} value={meal} className="list-none">
-              <MealCard
-                meal={meal}
-                index={i}
-                onToggleEaten={handleToggleEaten}
-                onOpenDeviation={setDeviationIndex}
-                onEdit={() => setEditingIndex(i)}
-                onDelete={() => handleDeleteMeal(i)}
-              />
-            </Reorder.Item>
-          ))}
-        </Reorder.Group>
-      ) : null}
+      {/* Meal list */}
+      <div className="space-y-3">
+        {adaptiveMeals.map((meal, i) => (
+          <MealCard
+            key={meal.name + i}
+            meal={meal}
+            index={i}
+            onToggleEaten={handleToggleEaten}
+            onOpenDeviation={setDeviationIndex}
+            onEdit={() => setEditingIndex(i)}
+            onDelete={() => handleDeleteMeal(i)}
+          />
+        ))}
+      </div>
 
       {/* Add meal – menu opens ABOVE the button to avoid being hidden by bottom nav */}
       <div className="relative">
