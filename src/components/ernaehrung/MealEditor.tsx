@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { FOOD_REFERENCE, calculateMacros, searchFoods } from '@/lib/constants/foods'
+import { FOOD_REFERENCE, calculateMacros } from '@/lib/constants/foods'
+import { useAllFoods } from '@/lib/hooks/useFoods'
 import type { Meal, MealFoodItem } from '@/lib/db/types'
 import { X, Search, Plus, Trash2 } from 'lucide-react'
 
@@ -13,17 +14,20 @@ interface MealEditorProps {
 }
 
 export default function MealEditor({ meal, onSave, onClose }: MealEditorProps) {
+  const allFoods = useAllFoods()
   const [items, setItems] = useState<MealFoodItem[]>(meal.items ?? [])
   const [searchQuery, setSearchQuery] = useState('')
   const [showSearch, setShowSearch] = useState(false)
 
-  const searchResults = searchQuery.length > 0 ? searchFoods(searchQuery) : FOOD_REFERENCE.slice(0, 12)
+  const searchResults = searchQuery.length > 0
+    ? allFoods.filter(f => f.name.toLowerCase().includes(searchQuery.toLowerCase()) || f.keywords.some(k => k.includes(searchQuery.toLowerCase())))
+    : allFoods.slice(0, 12)
 
   const totalKcal = items.reduce((s, i) => s + i.kcal, 0)
   const totalProtein = items.reduce((s, i) => s + i.protein_g, 0)
 
   function addFoodItem(foodId: string) {
-    const food = FOOD_REFERENCE.find(f => f.id === foodId)
+    const food = allFoods.find(f => f.id === foodId)
     if (!food) return
     const newItem: MealFoodItem = {
       food_id: food.id,
@@ -41,7 +45,7 @@ export default function MealEditor({ meal, onSave, onClose }: MealEditorProps) {
   function updateItemMenge(index: number, menge: number) {
     setItems(prev => {
       const updated = [...prev]
-      const food = FOOD_REFERENCE.find(f => f.id === updated[index].food_id)
+      const food = allFoods.find(f => f.id === updated[index].food_id)
       if (food) {
         const macros = calculateMacros(food, menge)
         updated[index] = { ...updated[index], menge, kcal: macros.kcal, protein_g: macros.protein_g }

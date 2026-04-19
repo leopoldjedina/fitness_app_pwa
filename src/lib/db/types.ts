@@ -128,7 +128,7 @@ export interface WeekPlan {
   tage: WeekDay[] // 7 entries Mo–So
 }
 
-export type MealKategorie = 'Frühstück' | 'Mittagessen' | 'Abendessen' | 'Snack'
+export type MealKategorie = 'Frühstück' | 'Pre-Training' | 'Mittagessen' | 'Abendessen' | 'Snack'
 
 export interface MealFoodItem {
   food_id: string              // reference to FOOD_REFERENCE.id

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, Reorder } from 'framer-motion'
 import { useTodayMealPlan, updateMeal, upsertMealPlan } from '@/lib/hooks/useTodayMealPlan'
 import { useUserProfile } from '@/lib/hooks/useUserProfile'
 import { useTodayTracking } from '@/lib/hooks/useTodayTracking'
@@ -14,10 +14,10 @@ import MealCard from '@/components/ernaehrung/MealCard'
 import DeviationSheet from '@/components/ernaehrung/DeviationSheet'
 import MealEditor from '@/components/ernaehrung/MealEditor'
 import Link from 'next/link'
-import { CalendarDays, Plus } from 'lucide-react'
+import { CalendarDays, Plus, Apple } from 'lucide-react'
 import type { Meal, MealKategorie, MealPlan } from '@/lib/db/types'
 
-const KATEGORIE_OPTIONS: MealKategorie[] = ['Frühstück', 'Mittagessen', 'Abendessen', 'Snack']
+const KATEGORIE_OPTIONS: MealKategorie[] = ['Frühstück', 'Pre-Training', 'Mittagessen', 'Abendessen', 'Snack']
 
 function createEmptyMeal(kategorie: MealKategorie, index: number): Meal {
   return {
@@ -141,14 +141,17 @@ export default function ErnaehrungPage() {
         <h1 className="text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
           Ernährung
         </h1>
-        <Link
-          href="/ernaehrung/uebersicht"
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold glass"
-          style={{ color: 'var(--color-text-secondary)' }}
-        >
-          <CalendarDays size={14} />
-          Übersicht
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/lebensmittel" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold glass"
+            style={{ color: 'var(--color-text-secondary)' }}>
+            <Apple size={13} />
+          </Link>
+          <Link href="/ernaehrung/uebersicht" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold glass"
+            style={{ color: 'var(--color-text-secondary)' }}>
+            <CalendarDays size={14} />
+            Übersicht
+          </Link>
+        </div>
       </div>
 
       {/* Summary */}
@@ -169,39 +172,47 @@ export default function ErnaehrungPage() {
         </p>
       )}
 
-      {/* Meal list */}
-      <div className="space-y-3">
-        {adaptiveMeals.map((meal, i) => (
-          <MealCard
-            key={i}
-            meal={meal}
-            index={i}
-            onToggleEaten={handleToggleEaten}
-            onOpenDeviation={setDeviationIndex}
-            onEdit={() => setEditingIndex(i)}
-            onDelete={() => handleDeleteMeal(i)}
-          />
-        ))}
-      </div>
-
-      {/* Add meal */}
-      <div className="relative">
-        <button
-          onClick={() => setShowAddMenu(!showAddMenu)}
-          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition-all active:scale-95"
-          style={{ border: '2px dashed var(--color-border-strong)', color: 'var(--color-text-secondary)' }}
+      {/* Meal list (reorderable) */}
+      {adaptiveMeals.length > 0 ? (
+        <Reorder.Group
+          axis="y"
+          values={adaptiveMeals}
+          onReorder={async (newOrder) => {
+            if (!mealPlan) return
+            // Map adaptive meals back to stored meals by matching index
+            const reorderedMeals = newOrder.map(am => {
+              const origIdx = adaptiveMeals.indexOf(am)
+              return mealPlan.mahlzeiten[origIdx]
+            })
+            await upsertMealPlan({ ...mealPlan, mahlzeiten: reorderedMeals })
+          }}
+          className="space-y-3"
         >
-          <Plus size={16} />
-          Mahlzeit hinzufügen
-        </button>
+          {adaptiveMeals.map((meal, i) => (
+            <Reorder.Item key={meal.name + i} value={meal} className="list-none">
+              <MealCard
+                meal={meal}
+                index={i}
+                onToggleEaten={handleToggleEaten}
+                onOpenDeviation={setDeviationIndex}
+                onEdit={() => setEditingIndex(i)}
+                onDelete={() => handleDeleteMeal(i)}
+              />
+            </Reorder.Item>
+          ))}
+        </Reorder.Group>
+      ) : null}
+
+      {/* Add meal – menu opens ABOVE the button to avoid being hidden by bottom nav */}
+      <div className="relative">
         {showAddMenu && (
-          <div className="absolute left-0 right-0 mt-2 rounded-xl overflow-hidden z-10 shadow-lg"
+          <div className="absolute left-0 right-0 bottom-full mb-2 rounded-xl overflow-hidden z-20 shadow-lg"
             style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
             {KATEGORIE_OPTIONS.map(k => (
               <button
                 key={k}
                 onClick={() => handleAddMeal(k)}
-                className="w-full text-left px-4 py-3 text-sm font-medium transition-colors"
+                className="w-full text-left px-4 py-3 text-sm font-medium transition-colors active:opacity-70"
                 style={{ color: 'var(--color-text-primary)', borderBottom: '1px solid var(--color-border)' }}
               >
                 {k}

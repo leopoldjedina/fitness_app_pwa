@@ -12,7 +12,7 @@ import DrumPicker, {
 import { useYesterdayTracking } from '@/lib/hooks/useYesterdayTracking'
 import { useTodayTracking, upsertTodayTracking } from '@/lib/hooks/useTodayTracking'
 import type { DailyTracking, Energielevel } from '@/lib/db/types'
-import { Pencil, Save, SkipForward } from 'lucide-react'
+import { Pencil, Save, SkipForward, Zap, Moon, Clock, Scale, Ruler, Heart } from 'lucide-react'
 
 const ENERGY_LABELS = ['😴', '😕', '😐', '😊', '⚡']
 
@@ -44,11 +44,8 @@ export default function MorningCheckIn() {
   const [isEditing, setIsEditing] = useState(false)
   const [form, setForm] = useState<CheckInState | null>(null)
 
-  const hasSavedData = today && (
-    today.energielevel !== undefined ||
-    today.gewicht_kg !== undefined ||
-    today.schlafindex !== undefined
-  )
+  // Show saved view if a DailyTracking record exists for today (even with all empty values)
+  const hasSavedData = today !== undefined && today !== null
 
   function startEditing() {
     setForm({
@@ -99,12 +96,12 @@ export default function MorningCheckIn() {
           </button>
         </div>
         <div className="grid grid-cols-3 gap-3">
-          <ValueChip label="Energie" value={today?.energielevel ? ENERGY_LABELS[today.energielevel - 1] : '–'} />
-          <ValueChip label="Schlaf" value={today?.schlafindex != null ? `${today.schlafindex}` : '–'} unit="Score" />
-          <ValueChip label="Dauer" value={today?.schlaf_h != null ? `${today.schlaf_h}` : '–'} unit="h" />
-          <ValueChip label="Gewicht" value={today?.gewicht_kg != null ? `${today.gewicht_kg.toFixed(1)}` : '–'} unit="kg" />
-          <ValueChip label="Bauch" value={today?.bauchumfang_cm != null ? `${today.bauchumfang_cm.toFixed(1)}` : '–'} unit="cm" />
-          <ValueChip label="Puls" value={today?.ruhepuls_bpm != null ? `${today.ruhepuls_bpm}` : '–'} unit="bpm" />
+          <ValueChip icon={<Zap size={14} />} label="Energie" value={today?.energielevel ? ENERGY_LABELS[today.energielevel - 1] : '–'} />
+          <ValueChip icon={<Moon size={14} />} label="Schlaf" value={today?.schlafindex != null ? `${today.schlafindex}` : '–'} unit="Score" />
+          <ValueChip icon={<Clock size={14} />} label="Dauer" value={today?.schlaf_h != null ? `${today.schlaf_h}` : '–'} unit="h" />
+          <ValueChip icon={<Scale size={14} />} label="Gewicht" value={today?.gewicht_kg != null ? `${today.gewicht_kg.toFixed(1)}` : '–'} unit="kg" />
+          <ValueChip icon={<Ruler size={14} />} label="Bauch" value={today?.bauchumfang_cm != null ? `${today.bauchumfang_cm.toFixed(1)}` : '–'} unit="cm" />
+          <ValueChip icon={<Heart size={14} />} label="Puls" value={today?.ruhepuls_bpm != null ? `${today.ruhepuls_bpm}` : '–'} unit="bpm" />
         </div>
       </div>
     )
@@ -224,9 +221,10 @@ export default function MorningCheckIn() {
   )
 }
 
-function ValueChip({ label, value, unit }: { label: string; value: string; unit?: string }) {
+function ValueChip({ icon, label, value, unit }: { icon?: React.ReactNode; label: string; value: string; unit?: string }) {
   return (
     <div className="rounded-lg p-2 text-center" style={{ background: 'var(--color-surface-elevated)' }}>
+      {icon && <div className="flex justify-center mb-1" style={{ color: 'var(--color-text-muted)' }}>{icon}</div>}
       <div className="text-lg font-bold" style={{ color: value === '–' ? 'var(--color-text-muted)' : 'var(--color-text-primary)' }}>
         {value}
         {unit && value !== '–' && (

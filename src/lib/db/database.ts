@@ -8,6 +8,7 @@ import type {
   MealPlan,
   ShoppingList,
 } from './types'
+import type { FoodItem } from '../constants/foods'
 
 class FitnessDB extends Dexie {
   userProfile!: Table<UserProfile>
@@ -17,6 +18,7 @@ class FitnessDB extends Dexie {
   weekPlans!: Table<WeekPlan>
   mealPlans!: Table<MealPlan>
   shoppingLists!: Table<ShoppingList>
+  customFoods!: Table<FoodItem>
 
   constructor() {
     super('leofit-db')
@@ -28,6 +30,17 @@ class FitnessDB extends Dexie {
       weekPlans: 'id, [jahr+kw]',
       mealPlans: 'id, datum',
       shoppingLists: 'id',
+    })
+    // Version 2: add custom foods table
+    this.version(2).stores({
+      userProfile: 'id',
+      dailyTracking: 'id, datum',
+      trainingSessions: 'id, datum',
+      exerciseLogs: 'id, sessionId, [sessionId+uebungsname]',
+      weekPlans: 'id, [jahr+kw]',
+      mealPlans: 'id, datum',
+      shoppingLists: 'id',
+      customFoods: 'id, name',
     })
   }
 }

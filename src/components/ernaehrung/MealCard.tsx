@@ -1,7 +1,7 @@
 'use client'
 
 import type { AdaptiveMeal } from '@/lib/db/types'
-import { Check, AlertCircle, ChevronRight, Pencil, Trash2 } from 'lucide-react'
+import { Check, Pencil, Trash2, GripVertical } from 'lucide-react'
 
 interface MealCardProps {
   meal: AdaptiveMeal
@@ -107,15 +107,6 @@ export default function MealCard({ meal, index, onToggleEaten, onOpenDeviation, 
             <button onClick={onEdit} className="p-1.5 rounded-lg transition-all active:scale-90"
               style={{ color: 'var(--color-text-muted)' }}>
               <Pencil size={14} />
-            </button>
-          )}
-          {!meal.gegessen && (
-            <button
-              onClick={() => onOpenDeviation(index)}
-              className="p-1.5 rounded-lg transition-all active:scale-90"
-              style={{ color: hasDeviation ? 'var(--color-accent)' : 'var(--color-text-muted)' }}
-            >
-              {hasDeviation ? <AlertCircle size={14} /> : <ChevronRight size={14} />}
             </button>
           )}
           {onDelete && (
