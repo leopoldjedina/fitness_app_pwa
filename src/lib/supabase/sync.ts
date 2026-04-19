@@ -279,13 +279,46 @@ export async function pushToSupabase(): Promise<{ pushed: number; errors: string
     }
   }
 
+  // Deduplicate by key – keep only the last occurrence (most recent)
+  function dedupe<T>(items: T[], keyFn: (item: T) => string): T[] {
+    const map = new Map<string, T>()
+    for (const item of items) map.set(keyFn(item), item)
+    return [...map.values()]
+  }
+
   try {
+    // Clean up local duplicates FIRST, then push
+    const weekPlans = await db.weekPlans.toArray()
+    const dedupedWeekPlans = dedupe(weekPlans, w => `${w.jahr}-${w.kw}`)
+    if (dedupedWeekPlans.length < weekPlans.length) {
+      // Delete duplicates from IndexedDB – keep only the deduped ones
+      const keepIds = new Set(dedupedWeekPlans.map(w => w.id))
+      const toDelete = weekPlans.filter(w => !keepIds.has(w.id)).map(w => w.id)
+      await db.weekPlans.bulkDelete(toDelete)
+    }
+
+    const mealPlans = await db.mealPlans.toArray()
+    const dedupedMealPlans = dedupe(mealPlans, m => m.datum)
+    if (dedupedMealPlans.length < mealPlans.length) {
+      const keepIds = new Set(dedupedMealPlans.map(m => m.id))
+      const toDelete = mealPlans.filter(m => !keepIds.has(m.id)).map(m => m.id)
+      await db.mealPlans.bulkDelete(toDelete)
+    }
+
+    const tracking = await db.dailyTracking.toArray()
+    const dedupedTracking = dedupe(tracking, t => t.datum)
+    if (dedupedTracking.length < tracking.length) {
+      const keepIds = new Set(dedupedTracking.map(t => t.id))
+      const toDelete = tracking.filter(t => !keepIds.has(t.id)).map(t => t.id)
+      await db.dailyTracking.bulkDelete(toDelete)
+    }
+
     await pushTable('user_profile', await db.userProfile.toArray(), profileToRow, 'id')
-    await pushTable('daily_tracking', await db.dailyTracking.toArray(), trackingToRow, 'datum')
+    await pushTable('daily_tracking', dedupedTracking, trackingToRow, 'datum')
     await pushTable('training_sessions', await db.trainingSessions.toArray(), sessionToRow, 'id')
     await pushTable('exercise_logs', await db.exerciseLogs.toArray(), logToRow, 'id')
-    await pushTable('week_plans', await db.weekPlans.toArray(), weekPlanToRow, 'jahr,kw')
-    await pushTable('meal_plans', await db.mealPlans.toArray(), mealPlanToRow, 'datum')
+    await pushTable('week_plans', dedupedWeekPlans, weekPlanToRow, 'jahr,kw')
+    await pushTable('meal_plans', dedupedMealPlans, mealPlanToRow, 'datum')
     await pushTable('custom_foods', await db.customFoods.toArray(), foodToRow, 'id')
   } catch (e) {
     errors.push(e instanceof Error ? e.message : String(e))
