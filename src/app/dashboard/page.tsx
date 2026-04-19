@@ -7,7 +7,9 @@ import { computeKcalSoll, computeProteinSoll } from '@/lib/logic/calories'
 import { todayISO, formatDayName } from '@/lib/utils/dates'
 import MorningCheckIn from '@/components/dashboard/MorningCheckIn'
 import Link from 'next/link'
-import { Dumbbell, UtensilsCrossed } from 'lucide-react'
+import { Dumbbell, UtensilsCrossed, CalendarDays } from 'lucide-react'
+import { useState } from 'react'
+import TrackingCalendar from '@/components/dashboard/TrackingCalendar'
 
 const WOCHENTAG_MAP: Record<string, string> = {
   Mo: 'Montag', Di: 'Dienstag', Mi: 'Mittwoch', Do: 'Donnerstag',
@@ -15,6 +17,7 @@ const WOCHENTAG_MAP: Record<string, string> = {
 }
 
 export default function DashboardPage() {
+  const [showCalendar, setShowCalendar] = useState(false)
   const profile = useUserProfile()
   const today = useTodayTracking()
   const weekPlan = useCurrentWeekPlan()
@@ -34,13 +37,23 @@ export default function DashboardPage() {
     <div className="px-4 pt-6 pb-4 space-y-4 max-w-lg mx-auto">
 
       {/* Header */}
-      <div>
-        <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-          {WOCHENTAG_MAP[todayShort] ?? todayShort}, {new Date().toLocaleDateString('de-AT', { day: '2-digit', month: '2-digit' })}
-        </p>
-        <h1 className="text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
-          Guten Morgen{profile?.name ? `, ${profile.name}` : ''} 👋
-        </h1>
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+            {WOCHENTAG_MAP[todayShort] ?? todayShort}, {new Date().toLocaleDateString('de-AT', { day: '2-digit', month: '2-digit' })}
+          </p>
+          <h1 className="text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
+            Guten Morgen{profile?.name ? `, ${profile.name}` : ''}
+          </h1>
+        </div>
+        <button
+          onClick={() => setShowCalendar(true)}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold glass transition-all active:scale-95"
+          style={{ color: 'var(--color-text-secondary)' }}
+        >
+          <CalendarDays size={14} />
+          Verlauf
+        </button>
       </div>
 
       {/* Morning Check-in */}
@@ -120,6 +133,8 @@ export default function DashboardPage() {
         </Link>
       </div>
 
+      {/* Calendar modal */}
+      {showCalendar && <TrackingCalendar onClose={() => setShowCalendar(false)} />}
     </div>
   )
 }

@@ -10,7 +10,17 @@ export function useCurrentWeekPlan(): WeekPlan | undefined {
   const kw = getKW(now)
   const jahr = getKWYear(now)
   return useLiveQuery(
-    () => db.weekPlans.where('[jahr+kw]').equals([jahr, kw]).first(),
+    async () => {
+      // Try compound index first, fallback to filter
+      try {
+        const result = await db.weekPlans.where('[jahr+kw]').equals([jahr, kw]).first()
+        if (result) return result
+      } catch {
+        // compound index may not exist
+      }
+      // Fallback: scan all and filter
+      return db.weekPlans.filter(p => p.kw === kw && p.jahr === jahr).first()
+    },
     [kw, jahr]
   )
 }

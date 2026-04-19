@@ -128,11 +128,24 @@ export interface WeekPlan {
   tage: WeekDay[] // 7 entries Mo–So
 }
 
+export type MealKategorie = 'Frühstück' | 'Mittagessen' | 'Abendessen' | 'Snack'
+
+export interface MealFoodItem {
+  food_id: string              // reference to FOOD_REFERENCE.id
+  name: string                 // denormalized for display
+  menge: number                // quantity
+  einheit: string              // unit (g, ml, Stück, EL, TL, Scheibe)
+  kcal: number                 // computed: (menge / standard_menge) * standard_kcal
+  protein_g: number            // computed: (menge / standard_menge) * standard_protein
+}
+
 export interface Meal {
-  name: string // "Frühstück", "Mittagessen", etc.
-  lebensmittel: string // description with amounts
-  kcal: number
-  protein_g: number
+  name: string                 // "Frühstück", "Mittagessen", etc.
+  kategorie: MealKategorie
+  items: MealFoodItem[]        // food items with quantities
+  lebensmittel: string         // legacy: text description (auto-generated from items)
+  kcal: number                 // sum of items
+  protein_g: number            // sum of items
   gegessen: boolean
   // Phase 2: deviation tracking (optional, backwards compatible)
   kcal_abweichung?: number       // actual kcal if deviated (overrides kcal)

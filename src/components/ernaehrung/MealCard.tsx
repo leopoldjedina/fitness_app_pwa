@@ -1,16 +1,18 @@
 'use client'
 
 import type { AdaptiveMeal } from '@/lib/db/types'
-import { Check, AlertCircle, ChevronRight } from 'lucide-react'
+import { Check, AlertCircle, ChevronRight, Pencil, Trash2 } from 'lucide-react'
 
 interface MealCardProps {
   meal: AdaptiveMeal
   index: number
   onToggleEaten: (index: number) => void
   onOpenDeviation: (index: number) => void
+  onEdit?: () => void
+  onDelete?: () => void
 }
 
-export default function MealCard({ meal, index, onToggleEaten, onOpenDeviation }: MealCardProps) {
+export default function MealCard({ meal, index, onToggleEaten, onOpenDeviation, onEdit, onDelete }: MealCardProps) {
   const hasDeviation = meal.kcal_abweichung !== undefined
 
   return (
@@ -99,16 +101,30 @@ export default function MealCard({ meal, index, onToggleEaten, onOpenDeviation }
           </div>
         </div>
 
-        {/* Deviation button */}
-        {!meal.gegessen && (
-          <button
-            onClick={() => onOpenDeviation(index)}
-            className="flex-shrink-0 p-1.5 rounded-lg transition-all active:scale-90"
-            style={{ color: hasDeviation ? 'var(--color-accent)' : 'var(--color-text-muted)' }}
-          >
-            {hasDeviation ? <AlertCircle size={18} /> : <ChevronRight size={18} />}
-          </button>
-        )}
+        {/* Action buttons */}
+        <div className="flex flex-col gap-1 flex-shrink-0">
+          {onEdit && (
+            <button onClick={onEdit} className="p-1.5 rounded-lg transition-all active:scale-90"
+              style={{ color: 'var(--color-text-muted)' }}>
+              <Pencil size={14} />
+            </button>
+          )}
+          {!meal.gegessen && (
+            <button
+              onClick={() => onOpenDeviation(index)}
+              className="p-1.5 rounded-lg transition-all active:scale-90"
+              style={{ color: hasDeviation ? 'var(--color-accent)' : 'var(--color-text-muted)' }}
+            >
+              {hasDeviation ? <AlertCircle size={14} /> : <ChevronRight size={14} />}
+            </button>
+          )}
+          {onDelete && (
+            <button onClick={onDelete} className="p-1.5 rounded-lg transition-all active:scale-90"
+              style={{ color: 'var(--color-text-muted)' }}>
+              <Trash2 size={14} />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Deviation reason */}

@@ -18,7 +18,13 @@ export default function DBInitializer() {
       const now = new Date()
       const kw = getKW(now)
       const jahr = getKWYear(now)
-      const existing = await db.weekPlans.where('[jahr+kw]').equals([jahr, kw]).first()
+      // Fallback query in case compound index doesn't work
+      let existing: unknown = null
+      try {
+        existing = await db.weekPlans.where('[jahr+kw]').equals([jahr, kw]).first()
+      } catch {
+        existing = await db.weekPlans.filter(p => p.kw === kw && p.jahr === jahr).first()
+      }
       if (!existing) {
         await db.weekPlans.add(createDefaultWeekPlan(now))
       }
