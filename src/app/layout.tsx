@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import BottomNav from '@/components/layout/BottomNav'
 import DBInitializer from '@/components/layout/DBInitializer'
+import SyncManager from '@/components/layout/SyncManager'
 
 export const metadata: Metadata = {
   title: 'LeoFit',
@@ -32,6 +33,7 @@ export default function RootLayout({
     <html lang="de">
       <body>
         <DBInitializer />
+        <SyncManager />
         <main
           className="min-h-dvh"
           style={{
