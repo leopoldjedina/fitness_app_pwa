@@ -1,136 +1,115 @@
 'use client'
 
-import { useState } from 'react'
-// framer-motion removed for Safari iOS compatibility
-import { useTodayMealPlan, updateMeal, upsertMealPlan } from '@/lib/hooks/useTodayMealPlan'
-import { useUserProfile } from '@/lib/hooks/useUserProfile'
-import { useTodayTracking } from '@/lib/hooks/useTodayTracking'
-import { computeAdaptiveMeals, computeDailyTotals } from '@/lib/logic/nutrition'
-import { computeKcalSoll, computeProteinSoll } from '@/lib/logic/calories'
-import { useCurrentWeekPlan } from '@/lib/hooks/useWeekPlan'
-import { todayISO, formatDayName } from '@/lib/utils/dates'
-import NutritionSummaryBar from '@/components/ernaehrung/NutritionSummaryBar'
-import MealCard from '@/components/ernaehrung/MealCard'
-import DeviationSheet from '@/components/ernaehrung/DeviationSheet'
-import MealEditor from '@/components/ernaehrung/MealEditor'
+import { useState, useEffect } from 'react'
+import { db } from '@/lib/db/database'
+import { todayISO } from '@/lib/utils/dates'
 import Link from 'next/link'
-import { CalendarDays, Plus, Apple } from 'lucide-react'
-import type { Meal, MealKategorie, MealPlan } from '@/lib/db/types'
+import { CalendarDays, Plus, Apple, Pencil, Trash2, Check } from 'lucide-react'
+import type { Meal, MealPlan, MealKategorie } from '@/lib/db/types'
+import dynamic from 'next/dynamic'
+
+// Lazy-load components that use framer-motion (DrumPicker)
+const MealEditor = dynamic(() => import('@/components/ernaehrung/MealEditor'), { ssr: false })
+const NutritionSummaryBar = dynamic(() => import('@/components/ernaehrung/NutritionSummaryBar'), { ssr: false })
 
 const KATEGORIE_OPTIONS: MealKategorie[] = ['Frühstück', 'Pre-Training', 'Mittagessen', 'Abendessen', 'Snack']
 
-function createEmptyMeal(kategorie: MealKategorie, index: number): Meal {
-  return {
-    name: kategorie === 'Snack' ? `Snack ${index}` : kategorie,
-    kategorie,
-    items: [],
-    lebensmittel: '',
-    kcal: 0,
-    protein_g: 0,
-    gegessen: false,
-  }
-}
-
 export default function ErnaehrungPage() {
-  const profile = useUserProfile()
-  const mealPlan = useTodayMealPlan()
-  const tracking = useTodayTracking()
-  const weekPlan = useCurrentWeekPlan()
-  const [deviationIndex, setDeviationIndex] = useState<number | null>(null)
+  const [mealPlan, setMealPlan] = useState<MealPlan | null | undefined>(undefined)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
   const [showAddMenu, setShowAddMenu] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const today = todayISO()
-  const dayShort = formatDayName(today)
-  const todayPlanDay = weekPlan?.tage.find(t => t.wochentag === dayShort)
-  const isTraining = todayPlanDay && ['Push', 'Pull', 'Beine', 'Zone 2', 'HIIT'].includes(todayPlanDay.training_typ)
-  const kcalBudget = profile ? computeKcalSoll(todayPlanDay?.training_typ, profile) : 2000
-  const proteinBudget = profile ? computeProteinSoll(profile) : 135
 
-  const meals = mealPlan?.mahlzeiten ?? []
-  const adaptiveMeals = meals.length > 0
-    ? computeAdaptiveMeals(meals, kcalBudget, proteinBudget)
-    : []
-  const totals = meals.length > 0
-    ? computeDailyTotals(meals, kcalBudget, proteinBudget)
-    : { kcalConsumed: 0, proteinConsumed: 0, kcalRemaining: kcalBudget, proteinRemaining: proteinBudget, mealsRemaining: 0 }
-
-  async function ensurePlan(): Promise<MealPlan> {
-    if (mealPlan && mealPlan.id) return mealPlan
-    const plan: MealPlan = {
-      id: crypto.randomUUID(),
-      datum: today,
-      typ: isTraining ? 'Trainingstag' : 'Ruhetag',
-      kcal_gesamt: 0,
-      protein_gesamt_g: 0,
-      mahlzeiten: [],
+  // Manual DB query instead of useLiveQuery (more robust on Safari)
+  useEffect(() => {
+    async function load() {
+      try {
+        const plan = await db.mealPlans.where('datum').equals(today).first()
+        setMealPlan(plan ?? null)
+      } catch (e) {
+        setError(`DB-Fehler: ${e instanceof Error ? e.message : String(e)}`)
+      }
     }
-    await upsertMealPlan(plan)
-    return plan
+    load()
+  }, [today])
+
+  // Re-load after changes
+  async function reload() {
+    try {
+      const plan = await db.mealPlans.where('datum').equals(today).first()
+      setMealPlan(plan ?? null)
+    } catch (e) {
+      setError(`Reload-Fehler: ${e instanceof Error ? e.message : String(e)}`)
+    }
   }
 
+  const meals = mealPlan?.mahlzeiten ?? []
+  const totalKcal = meals.reduce((s, m) => s + m.kcal, 0)
+  const totalProtein = meals.reduce((s, m) => s + m.protein_g, 0)
+
   async function handleAddMeal(kategorie: MealKategorie) {
-    const plan = await ensurePlan()
-    const snackCount = plan.mahlzeiten.filter(m => m.kategorie === 'Snack').length
-    const newMeal = createEmptyMeal(kategorie, snackCount + 1)
-    const updated: MealPlan = {
-      ...plan,
-      mahlzeiten: [...plan.mahlzeiten, newMeal],
+    try {
+      const plan = mealPlan ?? {
+        id: crypto.randomUUID(),
+        datum: today,
+        typ: 'Trainingstag' as const,
+        kcal_gesamt: 0,
+        protein_gesamt_g: 0,
+        mahlzeiten: [],
+      }
+      const snackCount = plan.mahlzeiten.filter(m => m.kategorie === 'Snack').length
+      const newMeal: Meal = {
+        name: kategorie === 'Snack' ? `Snack ${snackCount + 1}` : kategorie,
+        kategorie,
+        items: [],
+        lebensmittel: '',
+        kcal: 0,
+        protein_g: 0,
+        gegessen: false,
+      }
+      const updated = { ...plan, mahlzeiten: [...plan.mahlzeiten, newMeal] }
+      updated.kcal_gesamt = updated.mahlzeiten.reduce((s, m) => s + m.kcal, 0)
+      updated.protein_gesamt_g = updated.mahlzeiten.reduce((s, m) => s + m.protein_g, 0)
+      await db.mealPlans.put(updated)
+      setShowAddMenu(false)
+      await reload()
+      setEditingIndex(updated.mahlzeiten.length - 1)
+    } catch (e) {
+      setError(`Add-Fehler: ${e instanceof Error ? e.message : String(e)}`)
     }
-    await upsertMealPlan(updated)
-    setShowAddMenu(false)
-    setEditingIndex(updated.mahlzeiten.length - 1)
   }
 
   async function handleDeleteMeal(index: number) {
     if (!mealPlan) return
-    const updated: MealPlan = {
+    const updated = {
       ...mealPlan,
       mahlzeiten: mealPlan.mahlzeiten.filter((_, i) => i !== index),
     }
     updated.kcal_gesamt = updated.mahlzeiten.reduce((s, m) => s + m.kcal, 0)
     updated.protein_gesamt_g = updated.mahlzeiten.reduce((s, m) => s + m.protein_g, 0)
-    await upsertMealPlan(updated)
+    await db.mealPlans.put(updated)
+    await reload()
   }
 
   async function handleToggleEaten(index: number) {
     if (!mealPlan) return
-    const meal = mealPlan.mahlzeiten[index]
-    await updateMeal(today, index, { gegessen: !meal.gegessen })
+    const updated = { ...mealPlan, mahlzeiten: [...mealPlan.mahlzeiten] }
+    updated.mahlzeiten[index] = { ...updated.mahlzeiten[index], gegessen: !updated.mahlzeiten[index].gegessen }
+    await db.mealPlans.put(updated)
+    await reload()
   }
 
   async function handleMealSave(index: number, updatedMeal: Meal) {
     if (!mealPlan) return
-    const updated = [...mealPlan.mahlzeiten]
-    updated[index] = updatedMeal
-    const plan: MealPlan = {
-      ...mealPlan,
-      mahlzeiten: updated,
-      kcal_gesamt: updated.reduce((s, m) => s + m.kcal, 0),
-      protein_gesamt_g: updated.reduce((s, m) => s + m.protein_g, 0),
-    }
-    await upsertMealPlan(plan)
+    const updated = { ...mealPlan, mahlzeiten: [...mealPlan.mahlzeiten] }
+    updated.mahlzeiten[index] = updatedMeal
+    updated.kcal_gesamt = updated.mahlzeiten.reduce((s, m) => s + m.kcal, 0)
+    updated.protein_gesamt_g = updated.mahlzeiten.reduce((s, m) => s + m.protein_g, 0)
+    await db.mealPlans.put(updated)
     setEditingIndex(null)
-  }
-
-  async function handleDeviationConfirm(kcal: number, protein: number, grund: string) {
-    if (deviationIndex === null) return
-    await updateMeal(today, deviationIndex, {
-      kcal_abweichung: kcal,
-      protein_g_abweichung: protein,
-      abweichung_grund: grund || undefined,
-    })
-    setDeviationIndex(null)
-  }
-
-  async function handleDeviationClear() {
-    if (deviationIndex === null) return
-    await updateMeal(today, deviationIndex, {
-      kcal_abweichung: undefined,
-      protein_g_abweichung: undefined,
-      abweichung_grund: undefined,
-    })
-    setDeviationIndex(null)
+    await reload()
   }
 
   return (
@@ -154,44 +133,52 @@ export default function ErnaehrungPage() {
         </div>
       </div>
 
-      {/* Summary */}
+      {/* Error display */}
+      {error && (
+        <div className="rounded-xl p-3 text-xs" style={{ background: 'var(--color-danger-dim)', color: 'var(--color-danger)' }}>
+          {error}
+        </div>
+      )}
+
+      {/* Summary bar */}
       <NutritionSummaryBar
-        kcalConsumed={totals.kcalConsumed}
-        kcalBudget={kcalBudget}
-        proteinConsumed={totals.proteinConsumed}
-        proteinBudget={proteinBudget}
+        kcalConsumed={meals.filter(m => m.gegessen).reduce((s, m) => s + m.kcal, 0)}
+        kcalBudget={2200}
+        proteinConsumed={meals.filter(m => m.gegessen).reduce((s, m) => s + m.protein_g, 0)}
+        proteinBudget={135}
       />
 
-      {meals.length > 0 && (
+      {/* Plan summary */}
+      {meals.length > 0 ? (
         <p className="text-sm text-center" style={{ color: 'var(--color-text-secondary)' }}>
           Mit dem Essensplan erreichst du{' '}
-          <span className="font-semibold" style={{ color: 'var(--color-accent)' }}>
-            {meals.reduce((s, m) => s + m.kcal, 0)} kcal
-          </span>
+          <span className="font-semibold" style={{ color: 'var(--color-accent)' }}>{totalKcal} kcal</span>
           {' '}und{' '}
-          <span className="font-semibold" style={{ color: 'var(--color-success)' }}>
-            {meals.reduce((s, m) => s + m.protein_g, 0)}g Protein
-          </span>
+          <span className="font-semibold" style={{ color: 'var(--color-success)' }}>{totalProtein}g Protein</span>
           {' '}mit {meals.length} Mahlzeiten
         </p>
-      )}
+      ) : mealPlan === null ? (
+        <p className="text-sm text-center" style={{ color: 'var(--color-text-muted)' }}>
+          Kein Essensplan für heute. Füge Mahlzeiten hinzu!
+        </p>
+      ) : mealPlan === undefined ? (
+        <p className="text-sm text-center" style={{ color: 'var(--color-text-muted)' }}>Lade…</p>
+      ) : null}
 
       {/* Meal list */}
       <div className="space-y-3">
-        {adaptiveMeals.map((meal, i) => (
-          <MealCard
-            key={meal.name + i}
+        {meals.map((meal, i) => (
+          <SimpleMealCard
+            key={i}
             meal={meal}
-            index={i}
-            onToggleEaten={handleToggleEaten}
-            onOpenDeviation={setDeviationIndex}
+            onToggle={() => handleToggleEaten(i)}
             onEdit={() => setEditingIndex(i)}
             onDelete={() => handleDeleteMeal(i)}
           />
         ))}
       </div>
 
-      {/* Add meal – menu opens ABOVE the button to avoid being hidden by bottom nav */}
+      {/* Add meal */}
       <div className="relative">
         {showAddMenu && (
           <div className="absolute left-0 right-0 bottom-full mb-2 rounded-xl overflow-hidden z-20 shadow-lg"
@@ -200,7 +187,7 @@ export default function ErnaehrungPage() {
               <button
                 key={k}
                 onClick={() => handleAddMeal(k)}
-                className="w-full text-left px-4 py-3 text-sm font-medium transition-colors active:opacity-70"
+                className="w-full text-left px-4 py-3 text-sm font-medium active:opacity-70"
                 style={{ color: 'var(--color-text-primary)', borderBottom: '1px solid var(--color-border)' }}
               >
                 {k}
@@ -208,9 +195,17 @@ export default function ErnaehrungPage() {
             ))}
           </div>
         )}
+        <button
+          onClick={() => setShowAddMenu(!showAddMenu)}
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold active:scale-95"
+          style={{ border: '2px dashed var(--color-border-strong)', color: 'var(--color-text-secondary)' }}
+        >
+          <Plus size={16} />
+          Mahlzeit hinzufügen
+        </button>
       </div>
 
-      {/* Meal editor */}
+      {/* Meal editor (lazy loaded) */}
       {editingIndex !== null && mealPlan && (
         <MealEditor
           meal={mealPlan.mahlzeiten[editingIndex]}
@@ -218,16 +213,48 @@ export default function ErnaehrungPage() {
           onClose={() => setEditingIndex(null)}
         />
       )}
+    </div>
+  )
+}
 
-      {/* Deviation sheet */}
-      {deviationIndex !== null && mealPlan && (
-        <DeviationSheet
-          meal={mealPlan.mahlzeiten[deviationIndex]}
-          onConfirm={handleDeviationConfirm}
-          onClear={handleDeviationClear}
-          onClose={() => setDeviationIndex(null)}
-        />
-      )}
+// ─── Simple inline MealCard (no external dependencies) ──────────────────────
+
+function SimpleMealCard({
+  meal, onToggle, onEdit, onDelete
+}: {
+  meal: Meal; onToggle: () => void; onEdit: () => void; onDelete: () => void
+}) {
+  return (
+    <div className="rounded-xl p-4 glass"
+      style={{ borderColor: meal.gegessen ? 'rgba(34,197,94,0.3)' : 'var(--color-border)', opacity: meal.gegessen ? 0.7 : 1 }}>
+      <div className="flex items-start gap-3">
+        <button onClick={onToggle}
+          className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center mt-0.5"
+          style={{
+            background: meal.gegessen ? 'var(--color-success-dim)' : 'var(--color-surface-elevated)',
+            border: `2px solid ${meal.gegessen ? 'var(--color-success)' : 'var(--color-border-strong)'}`,
+          }}>
+          {meal.gegessen && <Check size={14} style={{ color: 'var(--color-success)' }} />}
+        </button>
+        <div className="flex-1 min-w-0">
+          <span className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>{meal.name}</span>
+          <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--color-text-secondary)' }}>
+            {meal.lebensmittel || 'Noch keine Lebensmittel'}
+          </p>
+          <div className="flex items-center gap-3 mt-2">
+            <span className="text-xs font-semibold" style={{ color: 'var(--color-accent)' }}>{meal.kcal} kcal</span>
+            <span className="text-xs font-semibold" style={{ color: 'var(--color-success)' }}>{meal.protein_g}g Protein</span>
+          </div>
+        </div>
+        <div className="flex flex-col gap-1 flex-shrink-0">
+          <button onClick={onEdit} className="p-1.5 rounded-lg" style={{ color: 'var(--color-text-muted)' }}>
+            <Pencil size={14} />
+          </button>
+          <button onClick={onDelete} className="p-1.5 rounded-lg" style={{ color: 'var(--color-text-muted)' }}>
+            <Trash2 size={14} />
+          </button>
+        </div>
+      </div>
     </div>
   )
 }
