@@ -162,13 +162,17 @@ export default function ErnaehrungPage() {
         proteinBudget={proteinBudget}
       />
 
-      {totals.mealsRemaining > 0 && (
+      {meals.length > 0 && (
         <p className="text-sm text-center" style={{ color: 'var(--color-text-secondary)' }}>
-          Noch{' '}
-          <span className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{totals.kcalRemaining} kcal</span>
+          Mit dem Essensplan erreichst du{' '}
+          <span className="font-semibold" style={{ color: 'var(--color-accent)' }}>
+            {meals.reduce((s, m) => s + m.kcal, 0)} kcal
+          </span>
           {' '}und{' '}
-          <span className="font-semibold" style={{ color: 'var(--color-success)' }}>{totals.proteinRemaining}g Protein</span>
-          {' '}auf {totals.mealsRemaining} Mahlzeiten
+          <span className="font-semibold" style={{ color: 'var(--color-success)' }}>
+            {meals.reduce((s, m) => s + m.protein_g, 0)}g Protein
+          </span>
+          {' '}mit {meals.length} Mahlzeiten
         </p>
       )}
 

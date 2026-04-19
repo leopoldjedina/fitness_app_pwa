@@ -1,7 +1,7 @@
 'use client'
 
 import type { AdaptiveMeal } from '@/lib/db/types'
-import { Check, Pencil, Trash2, GripVertical } from 'lucide-react'
+import { Check, Pencil, Trash2 } from 'lucide-react'
 
 interface MealCardProps {
   meal: AdaptiveMeal
@@ -13,18 +13,12 @@ interface MealCardProps {
 }
 
 export default function MealCard({ meal, index, onToggleEaten, onOpenDeviation, onEdit, onDelete }: MealCardProps) {
-  const hasDeviation = meal.kcal_abweichung !== undefined
-
   return (
     <div
       className="rounded-xl p-4 glass"
       style={{
-        borderColor: meal.gegessen
-          ? 'rgba(34,197,94,0.3)'
-          : hasDeviation
-          ? 'rgba(249,115,22,0.3)'
-          : 'var(--color-border)',
-        opacity: meal.gegessen && !hasDeviation ? 0.7 : 1,
+        borderColor: meal.gegessen ? 'rgba(34,197,94,0.3)' : 'var(--color-border)',
+        opacity: meal.gegessen ? 0.7 : 1,
       }}
     >
       <div className="flex items-start gap-3">
@@ -42,62 +36,21 @@ export default function MealCard({ meal, index, onToggleEaten, onOpenDeviation, 
 
         {/* Meal info */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>
-              {meal.name}
-            </span>
-            {hasDeviation && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold"
-                style={{ background: 'var(--color-accent-dim)', color: 'var(--color-accent)' }}>
-                abgewichen
-              </span>
-            )}
-            {meal.isAdjusted && !hasDeviation && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold"
-                style={{ background: 'var(--color-warning-dim)', color: 'var(--color-warning)' }}>
-                angepasst
-              </span>
-            )}
-          </div>
+          <span className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+            {meal.name}
+          </span>
           <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--color-text-secondary)' }}>
-            {meal.lebensmittel}
+            {meal.lebensmittel || 'Noch keine Lebensmittel'}
           </p>
 
-          {/* Macros */}
+          {/* Macros – simple: just kcal (orange) + protein (green) */}
           <div className="flex items-center gap-3 mt-2">
-            {hasDeviation ? (
-              <>
-                <MacroChip
-                  value={meal.kcal_abweichung!}
-                  original={meal.kcal}
-                  unit="kcal"
-                  color="var(--color-accent)"
-                />
-                <MacroChip
-                  value={meal.protein_g_abweichung!}
-                  original={meal.protein_g}
-                  unit="g"
-                  color="var(--color-success)"
-                />
-              </>
-            ) : (
-              <>
-                <MacroChip
-                  value={meal.kcal_adjusted}
-                  original={meal.kcal}
-                  unit="kcal"
-                  color="var(--color-accent)"
-                  showOriginal={meal.isAdjusted}
-                />
-                <MacroChip
-                  value={meal.protein_g_adjusted}
-                  original={meal.protein_g}
-                  unit="g"
-                  color="var(--color-success)"
-                  showOriginal={meal.isAdjusted}
-                />
-              </>
-            )}
+            <span className="text-xs font-semibold" style={{ color: 'var(--color-accent)' }}>
+              {meal.kcal} kcal
+            </span>
+            <span className="text-xs font-semibold" style={{ color: 'var(--color-success)' }}>
+              {meal.protein_g}g Protein
+            </span>
           </div>
         </div>
 
@@ -117,27 +70,6 @@ export default function MealCard({ meal, index, onToggleEaten, onOpenDeviation, 
           )}
         </div>
       </div>
-
-      {/* Deviation reason */}
-      {meal.abweichung_grund && (
-        <p className="mt-2 text-xs pl-11" style={{ color: 'var(--color-text-muted)' }}>
-          {meal.abweichung_grund}
-        </p>
-      )}
     </div>
-  )
-}
-
-function MacroChip({
-  value, original, unit, color, showOriginal
-}: {
-  value: number; original: number; unit: string; color: string; showOriginal?: boolean
-}) {
-  return (
-    <span className="text-xs font-medium">
-      <span style={{ color }}>{value}</span>
-      {showOriginal && <span style={{ color: 'var(--color-text-muted)' }}> ({original})</span>}
-      <span style={{ color: 'var(--color-text-muted)' }}> {unit}</span>
-    </span>
   )
 }
