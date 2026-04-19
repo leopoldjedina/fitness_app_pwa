@@ -5,8 +5,31 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '@/lib/db/database'
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, addMonths, subMonths, getDay } from 'date-fns'
 import { toISODate } from '@/lib/utils/dates'
-import type { DailyTracking } from '@/lib/db/types'
+import type { DailyTracking, Energielevel } from '@/lib/db/types'
+import DrumPicker, {
+  ENERGIELEVEL_ITEMS,
+  SCHLAFSCORE_ITEMS,
+  SCHLAFDAUER_ITEMS,
+  GEWICHT_ITEMS,
+  BAUCHUMFANG_ITEMS,
+  RUHEPULS_ITEMS,
+} from '@/components/ui/DrumPicker'
 import { ChevronLeft, ChevronRight, X, Pencil, Save } from 'lucide-react'
+
+const ENERGY_LABELS = ['😴', '😕', '😐', '😊', '⚡']
+
+function findNearest<T>(items: T[], target: T | undefined | null, fallback: T): T {
+  if (target === undefined || target === null) return fallback
+  if (items.includes(target)) return target
+  const targetNum = Number(target)
+  let nearest = items[0]
+  let minDiff = Math.abs(Number(items[0]) - targetNum)
+  for (const item of items) {
+    const diff = Math.abs(Number(item) - targetNum)
+    if (diff < minDiff) { minDiff = diff; nearest = item }
+  }
+  return nearest
+}
 
 const WOCHENTAGE = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']
 const MONATE = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember']
@@ -135,14 +158,67 @@ export default function TrackingCalendar({ onClose }: TrackingCalendarProps) {
             </div>
 
             {editingDay && selectedTracking ? (
-              <div className="space-y-2">
-                <div className="grid grid-cols-2 gap-2">
-                  <EditField label="Gewicht (kg)" value={editForm.gewicht_kg ?? ''} onChange={v => setEditForm(f => ({ ...f, gewicht_kg: v ? parseFloat(v) : undefined }))} />
-                  <EditField label="Bauch (cm)" value={editForm.bauchumfang_cm ?? ''} onChange={v => setEditForm(f => ({ ...f, bauchumfang_cm: v ? parseFloat(v) : undefined }))} />
-                  <EditField label="Schlaf (h)" value={editForm.schlaf_h ?? ''} onChange={v => setEditForm(f => ({ ...f, schlaf_h: v ? parseFloat(v) : undefined }))} />
-                  <EditField label="Puls (bpm)" value={editForm.ruhepuls_bpm ?? ''} onChange={v => setEditForm(f => ({ ...f, ruhepuls_bpm: v ? parseInt(v) : undefined }))} />
-                  <EditField label="kcal" value={editForm.kcal_ist ?? ''} onChange={v => setEditForm(f => ({ ...f, kcal_ist: v ? parseInt(v) : undefined }))} />
-                  <EditField label="Protein (g)" value={editForm.protein_ist_g ?? ''} onChange={v => setEditForm(f => ({ ...f, protein_ist_g: v ? parseInt(v) : undefined }))} />
+              <div className="space-y-3">
+                {/* DrumPicker row for biomarkers */}
+                <div className="flex items-start justify-between gap-1 overflow-x-auto pb-1">
+                  <div className="flex flex-col items-center gap-1 flex-shrink-0">
+                    <DrumPicker
+                      items={[...ENERGIELEVEL_ITEMS]}
+                      value={(editForm.energielevel ?? 3) as number}
+                      onChange={(v) => setEditForm(f => ({ ...f, energielevel: v as Energielevel }))}
+                      renderItem={(v) => ENERGY_LABELS[(v as number) - 1]}
+                      itemHeight={36} width={56}
+                    />
+                    <span className="text-[9px]" style={{ color: 'var(--color-text-muted)' }}>Energie</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1 flex-shrink-0">
+                    <DrumPicker
+                      items={SCHLAFSCORE_ITEMS}
+                      value={findNearest(SCHLAFSCORE_ITEMS, editForm.schlafindex, 75)}
+                      onChange={(v) => setEditForm(f => ({ ...f, schlafindex: v }))}
+                      itemHeight={36} width={56}
+                    />
+                    <span className="text-[9px]" style={{ color: 'var(--color-text-muted)' }}>Schlaf</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1 flex-shrink-0">
+                    <DrumPicker
+                      items={SCHLAFDAUER_ITEMS}
+                      value={findNearest(SCHLAFDAUER_ITEMS, editForm.schlaf_h, 7.5)}
+                      onChange={(v) => setEditForm(f => ({ ...f, schlaf_h: v }))}
+                      renderItem={(v) => v.toFixed(2)}
+                      itemHeight={36} width={56}
+                    />
+                    <span className="text-[9px]" style={{ color: 'var(--color-text-muted)' }}>Dauer</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1 flex-shrink-0">
+                    <DrumPicker
+                      items={GEWICHT_ITEMS}
+                      value={findNearest(GEWICHT_ITEMS, editForm.gewicht_kg, 70.0)}
+                      onChange={(v) => setEditForm(f => ({ ...f, gewicht_kg: v }))}
+                      renderItem={(v) => v.toFixed(1)}
+                      itemHeight={36} width={64}
+                    />
+                    <span className="text-[9px]" style={{ color: 'var(--color-text-muted)' }}>Gewicht</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1 flex-shrink-0">
+                    <DrumPicker
+                      items={BAUCHUMFANG_ITEMS}
+                      value={findNearest(BAUCHUMFANG_ITEMS, editForm.bauchumfang_cm, 82.0)}
+                      onChange={(v) => setEditForm(f => ({ ...f, bauchumfang_cm: v }))}
+                      renderItem={(v) => v.toFixed(1)}
+                      itemHeight={36} width={64}
+                    />
+                    <span className="text-[9px]" style={{ color: 'var(--color-text-muted)' }}>Bauch</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1 flex-shrink-0">
+                    <DrumPicker
+                      items={RUHEPULS_ITEMS}
+                      value={findNearest(RUHEPULS_ITEMS, editForm.ruhepuls_bpm, 55)}
+                      onChange={(v) => setEditForm(f => ({ ...f, ruhepuls_bpm: v }))}
+                      itemHeight={36} width={56}
+                    />
+                    <span className="text-[9px]" style={{ color: 'var(--color-text-muted)' }}>Puls</span>
+                  </div>
                 </div>
                 <div className="flex gap-2">
                   <button onClick={() => setEditingDay(false)} className="flex-1 py-2 rounded-lg text-xs font-semibold glass"

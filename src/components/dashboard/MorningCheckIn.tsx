@@ -61,13 +61,15 @@ export default function MorningCheckIn() {
 
   async function handleSave() {
     if (!form) return
-    const updates: Partial<DailyTracking> = {}
-    if (form.energielevel !== null) updates.energielevel = form.energielevel
-    if (form.schlafindex !== null) updates.schlafindex = form.schlafindex
-    if (form.schlaf_h !== null) updates.schlaf_h = form.schlaf_h
-    if (form.gewicht_kg !== null) updates.gewicht_kg = form.gewicht_kg
-    if (form.bauchumfang_cm !== null) updates.bauchumfang_cm = form.bauchumfang_cm
-    if (form.ruhepuls_bpm !== null) updates.ruhepuls_bpm = form.ruhepuls_bpm
+    // Explicitly set all fields – null becomes undefined (clears the value)
+    const updates: Partial<DailyTracking> = {
+      energielevel: form.energielevel ?? undefined,
+      schlafindex: form.schlafindex ?? undefined,
+      schlaf_h: form.schlaf_h ?? undefined,
+      gewicht_kg: form.gewicht_kg ?? undefined,
+      bauchumfang_cm: form.bauchumfang_cm ?? undefined,
+      ruhepuls_bpm: form.ruhepuls_bpm ?? undefined,
+    }
     await upsertTodayTracking(updates)
     setIsEditing(false)
     setForm(null)
@@ -96,12 +98,12 @@ export default function MorningCheckIn() {
           </button>
         </div>
         <div className="grid grid-cols-3 gap-3">
-          <ValueChip icon={<Zap size={14} />} label="Energie" value={today?.energielevel ? ENERGY_LABELS[today.energielevel - 1] : '–'} />
-          <ValueChip icon={<Moon size={14} />} label="Schlaf" value={today?.schlafindex != null ? `${today.schlafindex}` : '–'} unit="Score" />
-          <ValueChip icon={<Clock size={14} />} label="Dauer" value={today?.schlaf_h != null ? `${today.schlaf_h}` : '–'} unit="h" />
-          <ValueChip icon={<Scale size={14} />} label="Gewicht" value={today?.gewicht_kg != null ? `${today.gewicht_kg.toFixed(1)}` : '–'} unit="kg" />
-          <ValueChip icon={<Ruler size={14} />} label="Bauch" value={today?.bauchumfang_cm != null ? `${today.bauchumfang_cm.toFixed(1)}` : '–'} unit="cm" />
-          <ValueChip icon={<Heart size={14} />} label="Puls" value={today?.ruhepuls_bpm != null ? `${today.ruhepuls_bpm}` : '–'} unit="bpm" />
+          <ValueChip icon={<Zap size={22} />} value={today?.energielevel ? ENERGY_LABELS[today.energielevel - 1] : '–'} />
+          <ValueChip icon={<Moon size={22} />} value={today?.schlafindex != null ? `${today.schlafindex}` : '–'} />
+          <ValueChip icon={<Clock size={22} />} value={today?.schlaf_h != null ? `${today.schlaf_h}h` : '–'} />
+          <ValueChip icon={<Scale size={22} />} value={today?.gewicht_kg != null ? `${today.gewicht_kg.toFixed(1)} kg` : '–'} />
+          <ValueChip icon={<Ruler size={22} />} value={today?.bauchumfang_cm != null ? `${today.bauchumfang_cm.toFixed(1)} cm` : '–'} />
+          <ValueChip icon={<Heart size={22} />} value={today?.ruhepuls_bpm != null ? `${today.ruhepuls_bpm} bpm` : '–'} />
         </div>
       </div>
     )
@@ -221,17 +223,13 @@ export default function MorningCheckIn() {
   )
 }
 
-function ValueChip({ icon, label, value, unit }: { icon?: React.ReactNode; label: string; value: string; unit?: string }) {
+function ValueChip({ icon, value }: { icon?: React.ReactNode; value: string }) {
   return (
-    <div className="rounded-lg p-2 text-center" style={{ background: 'var(--color-surface-elevated)' }}>
-      {icon && <div className="flex justify-center mb-1" style={{ color: 'var(--color-text-muted)' }}>{icon}</div>}
-      <div className="text-lg font-bold" style={{ color: value === '–' ? 'var(--color-text-muted)' : 'var(--color-text-primary)' }}>
+    <div className="rounded-lg p-3 flex flex-col items-center gap-1.5" style={{ background: 'var(--color-surface-elevated)' }}>
+      {icon && <div style={{ color: value === '–' ? 'var(--color-text-muted)' : 'var(--color-accent)' }}>{icon}</div>}
+      <div className="text-sm font-bold" style={{ color: value === '–' ? 'var(--color-text-muted)' : 'var(--color-text-primary)' }}>
         {value}
-        {unit && value !== '–' && (
-          <span className="text-xs font-normal ml-0.5" style={{ color: 'var(--color-text-muted)' }}>{unit}</span>
-        )}
       </div>
-      <div className="text-[10px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{label}</div>
     </div>
   )
 }
