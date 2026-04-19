@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence, Reorder } from 'framer-motion'
+// framer-motion removed for Safari compatibility
 import {
   useTrainingSession,
   useExerciseLogs,
@@ -187,9 +187,7 @@ export default function TrainingLogger({ datum }: TrainingLoggerProps) {
       {/* Exercise picker */}
       {showExercisePicker && (
         <div className="fixed inset-0 z-50 flex items-end" style={{ background: 'rgba(0,0,0,0.6)' }}>
-          <motion.div
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
+          <div
             className="w-full max-h-[70dvh] rounded-t-2xl overflow-hidden"
             style={{ background: 'var(--color-surface)' }}
           >
@@ -215,14 +213,14 @@ export default function TrainingLogger({ datum }: TrainingLoggerProps) {
                 </button>
               ))}
             </div>
-          </motion.div>
+          </div>
         </div>
       )}
 
       {/* Feedback sheet */}
       {showFeedback && (
         <div className="fixed inset-0 z-50 flex items-end" style={{ background: 'rgba(0,0,0,0.6)' }}>
-          <motion.div initial={{ y: 300 }} animate={{ y: 0 }}
+          <div
             className="w-full rounded-t-2xl p-6 space-y-4" style={{ background: 'var(--color-surface)' }}>
             <h3 className="text-lg font-bold" style={{ color: 'var(--color-text-primary)' }}>Training abschließen</h3>
             <textarea placeholder="Wie war das Training? (optional)" value={feedback}
@@ -237,7 +235,7 @@ export default function TrainingLogger({ datum }: TrainingLoggerProps) {
                 className="flex-1 py-3 rounded-xl text-sm font-semibold"
                 style={{ background: 'var(--color-success)', color: '#fff' }}>Fertig ✓</button>
             </div>
-          </motion.div>
+          </div>
         </div>
       )}
     </div>

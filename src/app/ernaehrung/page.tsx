@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { AnimatePresence } from 'framer-motion'
+// framer-motion removed for Safari iOS compatibility
 import { useTodayMealPlan, updateMeal, upsertMealPlan } from '@/lib/hooks/useTodayMealPlan'
 import { useUserProfile } from '@/lib/hooks/useUserProfile'
 import { useTodayTracking } from '@/lib/hooks/useTodayTracking'
@@ -211,27 +211,23 @@ export default function ErnaehrungPage() {
       </div>
 
       {/* Meal editor */}
-      <AnimatePresence>
-        {editingIndex !== null && mealPlan && (
-          <MealEditor
-            meal={mealPlan.mahlzeiten[editingIndex]}
-            onSave={(meal) => handleMealSave(editingIndex, meal)}
-            onClose={() => setEditingIndex(null)}
-          />
-        )}
-      </AnimatePresence>
+      {editingIndex !== null && mealPlan && (
+        <MealEditor
+          meal={mealPlan.mahlzeiten[editingIndex]}
+          onSave={(meal) => handleMealSave(editingIndex, meal)}
+          onClose={() => setEditingIndex(null)}
+        />
+      )}
 
       {/* Deviation sheet */}
-      <AnimatePresence>
-        {deviationIndex !== null && mealPlan && (
-          <DeviationSheet
-            meal={mealPlan.mahlzeiten[deviationIndex]}
-            onConfirm={handleDeviationConfirm}
-            onClear={handleDeviationClear}
-            onClose={() => setDeviationIndex(null)}
-          />
-        )}
-      </AnimatePresence>
+      {deviationIndex !== null && mealPlan && (
+        <DeviationSheet
+          meal={mealPlan.mahlzeiten[deviationIndex]}
+          onConfirm={handleDeviationConfirm}
+          onClear={handleDeviationClear}
+          onClose={() => setDeviationIndex(null)}
+        />
+      )}
     </div>
   )
 }

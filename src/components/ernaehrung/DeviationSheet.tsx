@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+// motion removed for Safari compatibility
 import DrumPicker from '@/components/ui/DrumPicker'
 import type { Meal } from '@/lib/db/types'
 import { X } from 'lucide-react'
@@ -33,11 +33,7 @@ export default function DeviationSheet({ meal, onConfirm, onClear, onClose }: De
       style={{ background: 'rgba(0,0,0,0.6)' }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
-      <motion.div
-        initial={{ y: '100%' }}
-        animate={{ y: 0 }}
-        exit={{ y: '100%' }}
-        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      <div
         className="w-full rounded-t-2xl p-6 space-y-5"
         style={{ background: 'var(--color-surface)' }}
       >
@@ -120,7 +116,7 @@ export default function DeviationSheet({ meal, onConfirm, onClear, onClose }: De
             Speichern
           </button>
         </div>
-      </motion.div>
+      </div>
     </div>
   )
 }

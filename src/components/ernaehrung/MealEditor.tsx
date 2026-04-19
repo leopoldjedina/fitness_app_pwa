@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+// motion removed for Safari compatibility
 import { FOOD_REFERENCE, calculateMacros } from '@/lib/constants/foods'
 import { useAllFoods } from '@/lib/hooks/useFoods'
 import type { Meal, MealFoodItem } from '@/lib/db/types'
@@ -72,11 +72,7 @@ export default function MealEditor({ meal, onSave, onClose }: MealEditorProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-end" style={{ background: 'rgba(0,0,0,0.6)' }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-      <motion.div
-        initial={{ y: '100%' }}
-        animate={{ y: 0 }}
-        exit={{ y: '100%' }}
-        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      <div
         className="w-full max-h-[85dvh] overflow-y-auto rounded-t-2xl p-5 space-y-4"
         style={{ background: 'var(--color-surface)' }}
       >
@@ -202,7 +198,7 @@ export default function MealEditor({ meal, onSave, onClose }: MealEditorProps) {
         >
           Speichern ({totalKcal} kcal · {totalProtein.toFixed(0)}g P)
         </button>
-      </motion.div>
+      </div>
     </div>
   )
 }
